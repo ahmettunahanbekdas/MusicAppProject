@@ -191,6 +191,5 @@ struct ArtistDetailView: View {
      ArtistDetail()
      }
      }
-     
      */
 
