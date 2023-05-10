@@ -41,8 +41,7 @@ struct ArtistView: View {
             ScrollView{
                 LazyVGrid(columns:[GridItem( .adaptive(minimum:130))]){
                     ForEach(artists) { artist in
-                        
-                        NavigationLink(destination:ArtistDetail(artist:artist)){
+                        NavigationLink(destination:ArtistDetailView( artistId:artist.id)){
                             NavigationView{
                                     Text(artist.name)
                                     .frame(width: 200, height: 200)
@@ -54,7 +53,9 @@ struct ArtistView: View {
                     }
                 }
             }
-        }.onAppear(perform:fetchArtist)
+        }
+        .onAppear(perform:fetchArtist)
+       // .navigationBarBackButtonHidden(true)
     }
     
     func fetchArtist(){
@@ -87,7 +88,6 @@ struct ArtistView: View {
 
 
 /*
- 
  struct ArtistView_Previews: PreviewProvider {
  static var previews: some View {
  ArtistView()

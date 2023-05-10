@@ -43,8 +43,12 @@ struct ContentView: View {
     var body: some View {
 
         NavigationView{
+            
             ScrollView{
+                Text("Deezer App")
+                    .font(.headline)
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 130))]){
+                    
                     ForEach(genres) { genre in
                         
                         NavigationLink(destination: ArtistView(genre:genre)){
@@ -59,7 +63,9 @@ struct ContentView: View {
 
 
                     }
-                }.onAppear(perform:fetchGenres)
+                }
+                .onAppear(perform:fetchGenres)
+                //.navigationBarBackButtonHidden(true)
             }
         }
     }
