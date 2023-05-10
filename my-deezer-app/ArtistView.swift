@@ -37,12 +37,14 @@ struct ArtistView: View {
 
     var body: some View {
         
-        NavigationView{
+        VStack{
+            
             ScrollView{
                 LazyVGrid(columns:[GridItem( .adaptive(minimum:130))]){
                     ForEach(artists) { artist in
                         NavigationLink(destination:ArtistDetailView( artistId:artist.id)){
                             NavigationView{
+                                   
                                     Text(artist.name)
                                     .frame(width: 200, height: 200)
                                     .background(Color.gray)

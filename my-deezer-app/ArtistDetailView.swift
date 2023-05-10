@@ -88,6 +88,7 @@ struct ArtistDetailView: View {
     
     var body: some View {
         VStack{
+            
             Text(artistDetail?.name ?? "NULL" )
                 .padding()
                 .font(.largeTitle)
