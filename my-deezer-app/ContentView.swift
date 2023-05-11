@@ -5,6 +5,7 @@
 //  Created by Ahmet Tunahan Bekdaş on 10.05.2023.
 //
 
+
 import SwiftUI
 struct Genre: Codable, Identifiable {
     let id: Int
@@ -16,7 +17,7 @@ struct Genre: Codable, Identifiable {
     let pictureXL: String
     let type: String
     
-    private enum CodingKeys: String, CodingKey {
+   private enum CodingKeys: String, CodingKey {
     case id, name, picture, type
     case pictureSmall = "picture_small"
     case pictureMedium = "picture_medium"
@@ -42,15 +43,13 @@ struct ContentView: View {
     
     var body: some View {
 
-        NavigationView{
-            
+        NavigationView{ 
             ScrollView{
                 Text("Deezer App")
                     .font(.headline)
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 130))]){
                     
-                    ForEach(genres) { genre in
-                        
+                    ForEach(genres) {genre in
                         NavigationLink(destination: ArtistView(genre:genre)){
                             NavigationView{
                                 Text(genre.name)
@@ -72,9 +71,9 @@ struct ContentView: View {
     
     
     func fetchGenres() {
-        let url = URL(string: "https://api.deezer.com/genre")!
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
+     let url = URL(string: "https://api.deezer.com/genre")!
+     URLSession.shared.dataTask(with: url) { data, response, error in
+        if let error = error {
                 errorMessage = error.localizedDescription
                 return
             }

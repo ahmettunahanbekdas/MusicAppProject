@@ -1,13 +1,7 @@
-//
-//  AlbumDetailView.swift
-//  my-deezer-app
-//
-//  Created by Ahmet Tunahan Bekdaş on 10.05.2023.
-//
-
 import SwiftUI
 
-struct AlbumDetail: Codable {
+
+struct AlbumDetail: Codable, Identifiable {
     let id: Int
     let title: String
     let link: URL
@@ -41,71 +35,57 @@ struct AlbumDetail: Codable {
         case type
     }
 }
-struct AlbumDetailData: Codable{
-    let data :[Album]
-}
-
 
 
 struct AlbumDetailView: View {
     @State private var errorMessage = ""
-    @State private var albums = [Album]()
-    @State private var albumDetail : AlbumDetail?
+    @State private var albums = [AlbumDetail]()
+    @State private var albumDetail: AlbumDetail?
+ 
     
-
+    let albumId: Int
     
-    let albumId:Int
     var body: some View {
         VStack {
-            if let albumDetail = albumDetail {
-                Text(albumDetail.title)
-            } else if !errorMessage.isEmpty {
-                Text(errorMessage)
-            } else {
-                Text("Loading...")
+            ScrollView {
+                LazyVGrid(columns:[GridItem(.adaptive(minimum: 120))]){
+                    ForEach(albums) { album in
+                        NavigationView {
+                            Text(album.title)
+                            EmptyView()
+                        }
+                    }
+                }
             }
         }
         .onAppear {
             fetchAlbumDetail()
         }
+        
     }
     
     func fetchAlbumDetail() {
-        let url = URL(string:"https://api.deezer.com/artist/\(albumId)/albums/")!
-        URLSession.shared.dataTask(with: url) {data, response, error in
-            URLSession.shared.dataTask(with: url) { data, response, error in
-                if let error = error {
-                    errorMessage = error.localizedDescription
-                    return
+        let url = URL(string: "https://api.deezer.com/artist/\(albumId)/albums/")!
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                errorMessage = error.localizedDescription
+                return
+            }
+            guard let data = data else {
+                DispatchQueue.main.async {
+                    errorMessage = "No data received"
                 }
-                guard let data = data else {
-                    DispatchQueue.main.async {
-                        errorMessage = "No data received"
-                    }
-                    return
+                return
+            }
+            do {
+                let response = try JSONDecoder().decode([AlbumDetail].self, from: data)
+                DispatchQueue.main.async {
+                    albums = response
                 }
-                do {
-                    let response = try JSONDecoder().decode(AlbumDetail.self,from:data)
-                    DispatchQueue.main.async{
-                        albumDetail = response
-                    }
-                } catch let error{
-                    errorMessage = error.localizedDescription
-                }
-            }.resume()
-        }
-    }
-
-}
-
-
-/*
- struct AlbumDetailView_Previews: PreviewProvider {
-    
-    
-    static var previews: some View {
-        AlbumDetailView()
+            } catch let error {
+                errorMessage = error.localizedDescription
+            }
+        }.resume()
     }
 }
- */
 

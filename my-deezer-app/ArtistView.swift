@@ -30,21 +30,22 @@ struct ArtistData: Codable {
 
 
 
-struct ArtistView: View {
+struct ArtistView : View {
     @State private var errorMessage = ""
     @State private var artists = [Artist]()
     let genre:Genre
 
+    
+    
     var body: some View {
-        
         VStack{
             
             ScrollView{
                 LazyVGrid(columns:[GridItem( .adaptive(minimum:130))]){
+                    
                     ForEach(artists) { artist in
                         NavigationLink(destination:ArtistDetailView( artistId:artist.id)){
                             NavigationView{
-                                   
                                     Text(artist.name)
                                     .frame(width: 200, height: 200)
                                     .background(Color.gray)
