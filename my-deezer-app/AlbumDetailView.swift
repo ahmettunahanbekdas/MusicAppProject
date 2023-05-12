@@ -2,6 +2,7 @@ import SwiftUI
 
 
 struct AlbumDetail: Codable, Identifiable {
+    
     let id: Int
     let title: String
     let link: URL
@@ -35,6 +36,7 @@ struct AlbumDetail: Codable, Identifiable {
         case type
     }
 }
+struct AlbumDetailData: Codable{
 
 
 struct AlbumDetailView: View {
@@ -65,7 +67,7 @@ struct AlbumDetailView: View {
     }
     
     func fetchAlbumDetail() {
-        let url = URL(string: "https://api.deezer.com/artist/\(albumId)/albums/")!
+        let url = URL(string: "https://api.deezer.com/artist/\(ArtistDetail.self)/albums/")!
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
                 errorMessage = error.localizedDescription

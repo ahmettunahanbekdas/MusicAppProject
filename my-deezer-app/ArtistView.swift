@@ -6,7 +6,8 @@
 //
 
 import SwiftUI
-struct Artist: Codable,Identifiable {
+
+private struct Artist: Codable,Identifiable {
     let id: Int
     let name: String
     let picture: URL
@@ -23,7 +24,7 @@ struct Artist: Codable,Identifiable {
     }
 }
 
-struct ArtistData: Codable {
+private struct ArtistData: Codable {
     let data: [Artist]
 }
 
@@ -33,7 +34,7 @@ struct ArtistData: Codable {
 struct ArtistView : View {
     @State private var errorMessage = ""
     @State private var artists = [Artist]()
-    let genre:Genre
+    let genreId:Int
 
     
     
@@ -44,7 +45,7 @@ struct ArtistView : View {
                 LazyVGrid(columns:[GridItem( .adaptive(minimum:130))]){
                     
                     ForEach(artists) { artist in
-                        NavigationLink(destination:ArtistDetailView( artistId:artist.id)){
+                        NavigationLink(destination:ArtistDetailView(artistId:artist.id)){
                             NavigationView{
                                     Text(artist.name)
                                     .frame(width: 200, height: 200)
@@ -62,7 +63,7 @@ struct ArtistView : View {
     }
     
     func fetchArtist(){
-        let url = URL(string: "https://api.deezer.com/genre/\(genre.id)/artists")!
+        let url = URL(string: "https://api.deezer.com/genre/\(genreId)/artists")!
         URLSession.shared.dataTask(with: url) {data,
             response, error in
             if let error = error{

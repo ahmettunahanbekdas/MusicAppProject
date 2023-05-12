@@ -12,8 +12,8 @@
 		0E28AA792A0AEBFB008E5005 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E28AA782A0AEBFB008E5005 /* ContentView.swift */; };
 		0E28AA7B2A0AEBFC008E5005 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E28AA7A2A0AEBFC008E5005 /* Assets.xcassets */; };
 		0E28AA7E2A0AEBFC008E5005 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E28AA7D2A0AEBFC008E5005 /* Preview Assets.xcassets */; };
+		0E2A60D42A0D61B800363B22 /* SongsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2A60D32A0D61B800363B22 /* SongsView.swift */; };
 		0E4137B82A0BB61A001C51F6 /* ArtistDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4137B72A0BB61A001C51F6 /* ArtistDetailView.swift */; };
-		0E4137BA2A0C23DF001C51F6 /* AlbumDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4137B92A0C23DF001C51F6 /* AlbumDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,8 +23,8 @@
 		0E28AA782A0AEBFB008E5005 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0E28AA7A2A0AEBFC008E5005 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0E28AA7D2A0AEBFC008E5005 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0E2A60D32A0D61B800363B22 /* SongsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongsView.swift; sourceTree = "<group>"; };
 		0E4137B72A0BB61A001C51F6 /* ArtistDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistDetailView.swift; sourceTree = "<group>"; };
-		0E4137B92A0C23DF001C51F6 /* AlbumDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +61,7 @@
 				0E28AA782A0AEBFB008E5005 /* ContentView.swift */,
 				0E0E70562A0B981300E3D3A6 /* ArtistView.swift */,
 				0E4137B72A0BB61A001C51F6 /* ArtistDetailView.swift */,
-				0E4137B92A0C23DF001C51F6 /* AlbumDetailView.swift */,
+				0E2A60D32A0D61B800363B22 /* SongsView.swift */,
 				0E28AA7A2A0AEBFC008E5005 /* Assets.xcassets */,
 				0E28AA7C2A0AEBFC008E5005 /* Preview Content */,
 			);
@@ -146,10 +146,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E4137BA2A0C23DF001C51F6 /* AlbumDetailView.swift in Sources */,
 				0E28AA792A0AEBFB008E5005 /* ContentView.swift in Sources */,
 				0E4137B82A0BB61A001C51F6 /* ArtistDetailView.swift in Sources */,
 				0E0E70572A0B981300E3D3A6 /* ArtistView.swift in Sources */,
+				0E2A60D42A0D61B800363B22 /* SongsView.swift in Sources */,
 				0E28AA772A0AEBFB008E5005 /* my_deezer_appApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct Album: Codable, Identifiable {
+ private struct Album: Codable, Identifiable {
     let id: Int
     let title: String
     let link: String
@@ -47,13 +47,15 @@ struct Album: Codable, Identifiable {
     }
 }
 
-struct AlbumData: Codable{
+
+// gelen apiyi albüm data içerisinde depolar 
+private struct AlbumData: Codable{
     let data:[Album]
 }
 
 
 
-struct ArtistDetail: Codable, Identifiable {
+private struct ArtistDetail: Codable, Identifiable {
     let id: Int
     let name: String
     let link: URL
@@ -80,11 +82,10 @@ struct ArtistDetailView: View {
     @State private var errorMessage = ""
     @State private var artistDetail : ArtistDetail?
     @State private var albums = [Album]()
-
-
-    let artistId:Int
-    
+    //@State private var albumId: Int
    
+    let artistId:Int
+
     
     var body: some View {
         VStack{
@@ -111,18 +112,22 @@ struct ArtistDetailView: View {
             }
                 
             ScrollView{
-                    ForEach(albums){ album in
-                        NavigationLink(destination: AlbumDetailView( albumId:album.id)){
+                ForEach(albums){ album in
+                    NavigationLink(destination: SongsView(albumId:album.id)){
                             HStack{
                                 // let imageURL = URL(string: album.coverMedium)
                                 AsyncImage(url: album.coverMedium)
                                 VStack{
                                     Text(album.title)
                                     Text(album.releaseDate)
+                                    Text(String(album.id)) //100673142
+                                    NavigationView{
+                                        Text("aaaa")
+                                    }
                                 }
                             }
-                        }
-                    }
+                       }
+                }
             }
         } .onAppear(perform: {
             fetchArtistDetail()
