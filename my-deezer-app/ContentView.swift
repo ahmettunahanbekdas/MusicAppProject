@@ -1,12 +1,3 @@
-//
-//  ContentView.swift
-//  my-deezer-app
-//
-//  Created by Ahmet Tunahan Bekdaş on 10.05.2023.
-//
-
-// Bu kısım, müzik türlerini temsil eden bir Genre yapısını tanımlar. Codable ve Identifiable protokollerini uygular ve Deezer API'sinden alınan JSON verisini bu modele dönüştürmek için kullanılır.
-
 import SwiftUI
 
 private struct Genre: Codable, Identifiable {
@@ -19,90 +10,108 @@ private struct Genre: Codable, Identifiable {
     let pictureXL: String
     let type: String
     
-   private enum CodingKeys: String, CodingKey {
-    case id, name, picture, type
-    case pictureSmall = "picture_small"
-    case pictureMedium = "picture_medium"
-    case pictureBig = "picture_big"
-    case pictureXL = "picture_xl"
+    private enum CodingKeys: String, CodingKey {
+        case id, name, picture, type
+        case pictureSmall = "picture_small"
+        case pictureMedium = "picture_medium"
+        case pictureBig = "picture_big"
+        case pictureXL = "picture_xl"
     }
 }
 
-//Bu kısım, Deezer API'sinden dönen müzik türü verilerini içeren bir GenreData yapısını tanımlar. Bu yapı, data adında bir diziye sahip olup, bu dizi içinde Genre nesnelerini içerir.
-private struct GenreData: Codable{
-    let data:[Genre]
+private struct GenreData: Codable {
+    let data: [Genre]
 }
 
-//Bu bölümde, ana ContentView yapısı tanımlanır. Uygulamanın ana ekranını oluşturur. isActive, genres, errorMessage ve imageUrl olmak üzere dört adet @State değişkeni bulunur. isActive değişkeni, görünümdeki gezinme bağlantılarının etkinleştirilip etkinleştirilmeyeceğini kontrol eder. genres değişkeni, müzik türlerini depolar. errorMessage değişkeni, olası hataları depolar. imageUrl değişkeni, geçici olarak kullanılır ve şu anda kodda kullanılmamaktadır.
 struct ContentView: View {
-    @State private var isActive: Bool = false
     @State private var genres = [Genre]()
     @State private var errorMessage = ""
     @State private var imageUrl = ""
     
-// Görünüm içinde NavigationView, ScrollView ve LazyVGrid kullanılır. genres dizisini dolaşarak her bir müzik türü için bir NavigationLink oluşturulur. NavigationLink tıklanıldığında, ilgili müzik türünün ayrıntılarını gösteren ArtistView'e geçiş yap
     var body: some View {
-
-        NavigationView{ 
-            ScrollView{
-                Text("Deezer App")
-                    .font(.headline)
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 130))]){
-                    
-                    ForEach(genres) {genre in
-                        NavigationLink(destination: ArtistView(genreId:genre.id)){
-                            NavigationView{
-                                Text(genre.name)
-                                    .frame(width: 200, height: 200)
-                                    .background(Color.gray)
-                                    .foregroundColor(.black)
-                                EmptyView()
+        NavigationView {
+            ScrollView {
+                LazyVGrid(columns: [
+                    GridItem(.adaptive(minimum: 120))
+                ], spacing: 10) {
+                    ForEach(genres) { genre in
+                        NavigationLink(destination: ArtistView(genreId: genre.id)) {
+                            VStack {
+                                AsyncImage(url: URL(string: genre.pictureMedium)!) { phase in
+                                    switch phase {
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(height: 120)
+                                            .clipped()
+                                            .overlay(
+                                                Text(genre.name)
+                                                    .font(.caption)
+                                                    .foregroundColor(.white)
+                                                    .padding(8)
+                                                    .background(Color.black.opacity(0.5))
+                                                    .cornerRadius(8)
+                                                    .padding(8),
+                                                alignment: .center
+                                            )
+                                    case .failure(_):
+                                        Color.gray
+                                    case .empty:
+                                        Text("Loading...")
+                                    @unknown default:
+                                        Text("Loading...")
+                                    }
+                                }
                             }
+                            .padding()
                         }
-
-
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(10)
                     }
                 }
-                .onAppear(perform:fetchGenres)
-                //.navigationBarBackButtonHidden(true)
+                .padding(.horizontal)
+                .onAppear(perform: fetchGenres)
+                .navigationBarTitle("CATAGORIES")
+                .navigationBarTitle(Text("CATAGORIES").font(.largeTitle).bold().foregroundColor(.black), displayMode: .inline)
+
             }
+            
+        
         }
     }
     
-   
     func fetchGenres() {
-        let url = URL(string: "https://api.deezer.com/genre")! // Deezer API'sine istek yapılacak URL oluşturuluyor.
-
+        let url = URL(string: "https://api.deezer.com/genre")!
+        
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
-                errorMessage = error.localizedDescription // Hata varsa hatayı yakala ve errorMessage değişkenine ata.
+                errorMessage = error.localizedDescription
                 return
             }
             
             guard let data = data else {
                 DispatchQueue.main.async {
-                    errorMessage = "No data received" // Veri yoksa hata mesajını errorMessage değişkenine ata.
+                    errorMessage = "No data received"
                 }
                 return
             }
             
             do {
-                let genreData = try JSONDecoder().decode(GenreData.self, from: data) // Gelen veriyi GenreData yapısına çöz ve genreData değişkenine ata.
+                let genreData = try JSONDecoder().decode(GenreData.self, from: data)
                 DispatchQueue.main.async {
-                    genres = genreData.data // GenreData'dan alınan veriyi genres dizisine ata.
+                    genres = genreData.data
                 }
             } catch let error {
-                errorMessage = error.localizedDescription // Hata varsa hatayı yakala ve errorMessage değişkenine ata.
+                errorMessage = error.localizedDescription
             }
-        }.resume() // Veri isteğini başlat.
-    }
-    
-    struct ContentView_Previews: PreviewProvider {
-        static var previews: some View {
-            ContentView()
-        }
+        }.resume()
     }
 }
 
-
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
 

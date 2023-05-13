@@ -1,13 +1,6 @@
-//
-//  ArtistView.swift
-//  my-deezer-app
-//
-//  Created by Ahmet Tunahan Bekdaş on 10.05.2023.
-//
-
 import SwiftUI
 
-private struct Artist: Codable,Identifiable {
+private struct Artist: Codable, Identifiable {
     let id: Int
     let name: String
     let picture: URL
@@ -28,45 +21,66 @@ private struct ArtistData: Codable {
     let data: [Artist]
 }
 
-
-
-
-struct ArtistView : View {
+struct ArtistView: View {
     @State private var errorMessage = ""
     @State private var artists = [Artist]()
-    let genreId:Int
+    @State private var showFavorites = false
 
-    
-    
+    let genreId: Int
+
     var body: some View {
-        VStack{
-            
-            ScrollView{
-                LazyVGrid(columns:[GridItem( .adaptive(minimum:130))]){
-                    
-                    ForEach(artists) { artist in
-                        NavigationLink(destination:ArtistDetailView(artistId:artist.id)){
-                            NavigationView{
-                                    Text(artist.name)
-                                    .frame(width: 200, height: 200)
-                                    .background(Color.gray)
-                                    .foregroundColor(.black)
-                                EmptyView()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        .onAppear(perform:fetchArtist)
-       // .navigationBarBackButtonHidden(true)
-    }
-    
-    func fetchArtist(){
+           VStack {
+               ScrollView {
+                   LazyVGrid(columns: [
+                       GridItem(.adaptive(minimum: 150), spacing: 5),
+                       GridItem(.adaptive(minimum: 150), spacing: 5)
+                   ], spacing: 10) {
+                       ForEach(artists) { artist in
+                           NavigationLink(destination: ArtistDetailView(artistId: artist.id)) {
+                               VStack {
+                                   AsyncImage(url: artist.pictureMedium) { phase in
+                                       switch phase {
+                                       case .success(let image):
+                                           image
+                                               .resizable()
+                                               .aspectRatio(contentMode: .fit)
+                                               .frame(maxHeight: UIScreen.main.bounds.height * 0.15)
+                                               .overlay(
+                                                   Text(artist.name)
+                                                       .font(.caption)
+                                                       .foregroundColor(.white)
+                                                       .padding(5)
+                                                       .background(Color.black.opacity(0.5))
+                                                       .cornerRadius(5)
+                                                       .padding(5),
+                                                   alignment: .center
+                                               )
+                                       case .failure(_):
+                                           Color.gray
+                                       case .empty:
+                                           Text("Loading...")
+                                       @unknown default:
+                                           Text("Loading...")
+                                       }
+                                   }
+                               }
+                               .padding()
+                               .background(Color.gray.opacity(0.2))
+                               .cornerRadius(10)
+                               .navigationBarTitle(Text("ARTİSTS").font(.largeTitle).bold().foregroundColor(.black), displayMode: .inline)
+                           }
+                       }
+                   }
+               }
+               Spacer()
+           }
+           .onAppear(perform: fetchArtists)
+       }
+
+    func fetchArtists() {
         let url = URL(string: "https://api.deezer.com/genre/\(genreId)/artists")!
-        URLSession.shared.dataTask(with: url) {data,
-            response, error in
-            if let error = error{
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
                 errorMessage = error.localizedDescription
                 return
             }
@@ -76,25 +90,15 @@ struct ArtistView : View {
                 }
                 return
             }
-            do{
-                let artistData = try JSONDecoder().decode(ArtistData.self, from: data )
-                DispatchQueue.main.async{
-                    artists  = artistData.data
+            do {
+                let artistData = try JSONDecoder().decode(ArtistData.self, from: data)
+                DispatchQueue.main.async {
+                    artists = artistData.data
                 }
-            }catch let error {
+            } catch let error {
                 errorMessage = error.localizedDescription
             }
         }.resume()
     }
 }
 
-
-
-
-/*
- struct ArtistView_Previews: PreviewProvider {
- static var previews: some View {
- ArtistView()
- }
- }
- */

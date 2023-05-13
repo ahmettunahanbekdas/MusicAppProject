@@ -48,7 +48,7 @@ import SwiftUI
 }
 
 
-// gelen apiyi albüm data içerisinde depolar 
+// gelen apiyi albüm data içerisinde depolar
 private struct AlbumData: Codable{
     let data:[Album]
 }
@@ -76,67 +76,95 @@ private struct ArtistDetail: Codable, Identifiable {
 }
 
 
-
-
 struct ArtistDetailView: View {
     @State private var errorMessage = ""
     @State private var artistDetail : ArtistDetail?
     @State private var albums = [Album]()
-    //@State private var albumId: Int
    
     let artistId:Int
 
-    
     var body: some View {
-        VStack{
+        ZStack(alignment: .top) {
+            ScrollView {
+                VStack(alignment: .center) {
+                    Text(artistDetail?.name ?? "NULL" )
+                        .opacity(0)
+                        .padding()
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .padding(.top, 10)
+                    
+                    AsyncImage(url: artistDetail?.pictureMedium ?? nil){ phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: UIScreen.main.bounds.width * 0.7, alignment: .center)
+                        case .failure(_):
+                            Text("Failed to load image.")
+                        case .empty:
+                            Text("Loading...")
+                        @unknown default:
+                            Text("Loading...")
+                        }
+                    }
+                    .padding(.bottom, 10)
+                
+                    ForEach(albums){ album in
+                        NavigationLink(destination: SongsView(albumId:album.id)){
+                            HStack{
+                                AsyncImage(url: album.coverMedium) { phase in
+                                    switch phase {
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 100, height: 100)
+                                            .clipShape(Circle())
+                                    case .failure(_):
+                                        Text("Failed to load image.")
+                                    case .empty:
+                                        Text("Loading...")
+                                    @unknown default:
+                                        Text("Loading...")
+                                    }
+                                }
+                                VStack(alignment: .leading) {
+                                    Text(album.title)
+                                    Text(album.releaseDate)
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity) // This line ensures that all cells have equal width
+                            }
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(10)
+                            .frame(width: UIScreen.main.bounds.width - 40)
+                        }
+                        .padding(.bottom, 10)
+                    }
+                }
+            }
+            .padding(.top, 60)
             
             Text(artistDetail?.name ?? "NULL" )
                 .padding()
                 .font(.largeTitle)
                 .fontWeight(.bold)
-                .padding(.top, 10)
-            AsyncImage(url: artistDetail?.pictureXl ?? nil){ phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: UIScreen.main.bounds.width * 0.45, alignment: .center)
-                case .failure(_):
-                    Text("Failed to load image.")
-                case .empty:
-                    Text("Loading...")
-                @unknown default:
-                    Text("Loading...")
-                }
-            }
                 
-            ScrollView{
-                ForEach(albums){ album in
-                    NavigationLink(destination: SongsView(albumId:album.id)){
-                            HStack{
-                                // let imageURL = URL(string: album.coverMedium)
-                                AsyncImage(url: album.coverMedium)
-                                VStack{
-                                    Text(album.title)
-                                    Text(album.releaseDate)
-                                    Text(String(album.id)) //100673142
-                                    NavigationView{
-                                        Text("aaaa")
-                                    }
-                                }
-                            }
-                       }
-                }
-            }
-        } .onAppear(perform: {
+        }
+        .onAppear(perform: {
             fetchArtistDetail()
             fetchAlbums()
-            
         })
-        //.navigationBarBackButtonHidden(true)
     }
-    
+    //... the rest of your code
+
+
+
+
+
+
     
     func fetchArtistDetail() {
         let url = URL(string: "https://api.deezer.com/artist/\(artistId)")!
