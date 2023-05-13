@@ -9,37 +9,29 @@ struct Track: Codable, Identifiable {
 }
 
 class Favorites: ObservableObject {
-    @Published var tracks: [Track] = []
-}
-
-struct FavoritesView: View {
-    @ObservedObject var favorites: Favorites
-    
-    var body: some View {
-        List(favorites.tracks) { track in
-            HStack {
-                AsyncImage(url: URL(string: track.cover)) { image in
-                    image.resizable()
-                } placeholder: {
-                    ProgressView()
-                }
-                .frame(width: 50, height: 50)
-                .clipShape(Circle())
-                
-                VStack(alignment: .leading) {
-                    Text(track.title)
-                        .font(.headline)
-                    Text("\(track.duration) seconds")
-                        .font(.subheadline)
-                }
-                
-                Spacer()
+    @Published var tracks: [Track] {
+        didSet {
+            let encoder = JSONEncoder()
+            if let encoded = try? encoder.encode(tracks) {
+                UserDefaults.standard.set(encoded, forKey: "Favorites")
             }
-            .padding()
         }
-        .navigationBarTitle("Favoriler")
+    }
+
+    init() {
+        if let items = UserDefaults.standard.data(forKey: "Favorites") {
+            let decoder = JSONDecoder()
+            if let decoded = try? decoder.decode([Track].self, from: items) {
+                self.tracks = decoded
+                return
+            }
+        }
+
+        self.tracks = []
     }
 }
+
+
 
 struct SongsView: View {
     @StateObject var favorites = Favorites()
@@ -86,20 +78,12 @@ struct SongsView: View {
                     .padding()
                 }
                 .navigationBarTitle(Text(album_title).font(.largeTitle).bold().foregroundColor(.black), displayMode: .inline)
-                .navigationBarItems(trailing:
-                    HStack {
-                        NavigationLink(destination: FavoritesView(favorites: favorites)) {
-                            Image(systemName: "heart")
-                                .resizable()
-                                .frame(width: 30, height: 30)
-                        }
-                    }
-                )
+                .navigationBarItems(trailing: NavigationLink(destination: FavoritesPage(favorites: favorites)) {
+                    Image(systemName: "heart")
+                })
             }
         }
-        .onAppear(perform: fetch2)
-    }
-    
+        .onAppear(perform: fetch2)    }
 
     func fetch2() {
         if let url = URL(string: "https://api.deezer.com/album/\(albumId)") {
