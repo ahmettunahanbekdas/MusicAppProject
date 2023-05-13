@@ -16,7 +16,7 @@ import SwiftUI
     let coverSmall: String
     let coverMedium: URL
     let coverBig: String
-    let coverXl: String
+    let coverXl: URL
     let md5Image: URL
     let genreId: Int
     let fans: Int
@@ -87,12 +87,7 @@ struct ArtistDetailView: View {
         ZStack(alignment: .top) {
             ScrollView {
                 VStack(alignment: .center) {
-                    Text(artistDetail?.name ?? "NULL" )
-                        .opacity(0)
-                        .padding()
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .padding(.top, 10)
+                  
                     
                     AsyncImage(url: artistDetail?.pictureMedium ?? nil){ phase in
                         switch phase {
@@ -114,7 +109,7 @@ struct ArtistDetailView: View {
                     ForEach(albums){ album in
                         NavigationLink(destination: SongsView(albumId:album.id)){
                             HStack{
-                                AsyncImage(url: album.coverMedium) { phase in
+                                AsyncImage(url: album.coverXl) { phase in
                                     switch phase {
                                     case .success(let image):
                                         image
@@ -131,7 +126,7 @@ struct ArtistDetailView: View {
                                     }
                                 }
                                 VStack(alignment: .leading) {
-                                    Text(album.title)
+                                    Text(album.title)   
                                     Text(album.releaseDate)
                                 }
                                 .padding()
@@ -142,15 +137,13 @@ struct ArtistDetailView: View {
                             .frame(width: UIScreen.main.bounds.width - 40)
                         }
                         .padding(.bottom, 10)
+                        .navigationBarTitle(Text(artistDetail?.name ?? "NULL").font(.largeTitle).bold().foregroundColor(.black), displayMode: .inline)
                     }
                 }
             }
             .padding(.top, 60)
             
-            Text(artistDetail?.name ?? "NULL" )
-                .padding()
-                .font(.largeTitle)
-                .fontWeight(.bold)
+            
                 
         }
         .onAppear(perform: {
@@ -158,12 +151,7 @@ struct ArtistDetailView: View {
             fetchAlbums()
         })
     }
-    //... the rest of your code
-
-
-
-
-
+ 
 
     
     func fetchArtistDetail() {

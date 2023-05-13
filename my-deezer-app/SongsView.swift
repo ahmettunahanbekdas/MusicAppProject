@@ -1,143 +1,146 @@
-//
-//  SongsView.swift
-//  my-deezer-app
-//
-//  Created by Ahmet Tunahan Bekdaş on 11.05.2023.
-//
-
 import SwiftUI
 
-private struct AlbumResponse: Codable,Identifiable {
+struct Track: Codable, Identifiable {
     let id: Int
     let title: String
-    let upc: String
-    let link: String
-    let share: String
-    let cover: String
-    let cover_small: String
-    let cover_medium: String
-    let cover_big: String
-    let cover_xl: String
-    let md5_image: String
-    let genre_id: Int
-    let genres: String //GenreData
-    let label: String
-    let nb_tracks: Int
     let duration: Int
-    let fans: Int
-    let release_date: String
-    let record_type: String
-    let available: Bool
-    let tracklist: String
-    let explicit_lyrics: Bool
-    let explicit_content_lyrics: Int
-    let explicit_content_cover: Int
-    let contributors: String //[Artist]
-    let artist: String //Artist
-    let type: String
-    let tracks: String //TrackData
-}
-
-private struct GenreData: Codable {
-    let data: [Genre]
-}
-
-private struct Genre: Codable {
-    let id: Int
-    let name: String
-    let picture: String
-    let type: String
-}
-
-private struct Artist: Codable {
-    let id: Int
-    let name: String
-    let link: String
-    let share: String
-    let picture: String
-    let picture_small: String
-    let picture_medium: String
-    let picture_big: String
-    let picture_xl: String
-    let radio: Bool
-    let tracklist: String
-    let type: String
-    let role: String?
-}
-
-private struct TrackData: Codable {
-    let data: [Track]
-}
-
-private struct Track: Codable,Identifiable {
-    let id: Int
-    let readable: Bool
-    let title: String
-    let title_short: String
-    let title_version: String
-    let link: String
-    let duration: Int
-    let rank: Int
-    let explicit_lyrics: Bool
-    let explicit_content_lyrics: Int
-    let explicit_content_cover: Int
     let preview: String
-    let md5_image: String
-    let artist: Artist
-    let album: AlbumResponse
-    let type: String
+    let cover: String
 }
 
+class Favorites: ObservableObject {
+    @Published var tracks: [Track] = []
+}
 
-
-
-struct SongsView: View {
-    @State private var tracks = [Track]()
-    @State private var errorMessage = ""
-    
-    let albumId:Int
+struct FavoritesView: View {
+    @ObservedObject var favorites: Favorites
     
     var body: some View {
-        VStack{
-            ForEach(tracks){ track in
-                Text(track.title)
+        List(favorites.tracks) { track in
+            HStack {
+                AsyncImage(url: URL(string: track.cover)) { image in
+                    image.resizable()
+                } placeholder: {
+                    ProgressView()
+                }
+                .frame(width: 50, height: 50)
+                .clipShape(Circle())
                 
-            }
-            Text(String(albumId))
-        }.onAppear(perform: fetchArtist)
-        
-    }
-   
-    func fetchArtist(){
-        
-        let url = URL(string: "https://api.deezer.com/album/\(albumId)")!
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                errorMessage = error.localizedDescription
-                return
-            }
-            guard let data = data else {
-                DispatchQueue.main.async {
-                    errorMessage = "No data received"
+                VStack(alignment: .leading) {
+                    Text(track.title)
+                        .font(.headline)
+                    Text("\(track.duration) seconds")
+                        .font(.subheadline)
                 }
-                return
+                
+                Spacer()
             }
-            
-            do {
-                let response = try JSONDecoder().decode( AlbumResponse.self, from: data)
-                DispatchQueue.main.async {
-                    print(223432)
-                    print(response)
-                }
-            } catch let error {
-                errorMessage = error.localizedDescription
-                print(errorMessage)
-            }
-        }.resume()
-        
-       
+            .padding()
+        }
+        .navigationBarTitle("Favoriler")
     }
-   
 }
 
+struct SongsView: View {
+    @StateObject var favorites = Favorites()
+    @State var tracks = [Track]()
+    @State var album_title = ""
+    @State var errorMessage = ""
+    
+    let albumId: Int
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                List(tracks) { track in
+                    HStack {
+                        AsyncImage(url: URL(string: track.cover)) { image in
+                            image.resizable()
+                        } placeholder: {
+                            ProgressView()
+                        }
+                        .frame(width: 100, height: 100)
+                        .clipShape(Circle())
+                        
+                        VStack(alignment: .leading) {
+                            Text(track.title)
+                                .font(.headline)
+                            Text("\(track.duration) seconds")
+                                .font(.subheadline)
+                        }
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            if favorites.tracks.contains(where: { $0.id == track.id }) {
+                                favorites.tracks.removeAll(where: { $0.id == track.id })
+                            } else {
+                                favorites.tracks.append(track)
+                            }
+                        }) {
+                            Image(systemName: favorites.tracks.contains(where: { $0.id == track.id }) ? "heart.fill" : "heart")
+                                .resizable()
+                                .frame(width: 30, height: 30)
+                        }
+                    }
+                    .padding()
+                }
+                .navigationBarTitle(Text(album_title).font(.largeTitle).bold().foregroundColor(.black), displayMode: .inline)
+                .navigationBarItems(trailing:
+                    HStack {
+                        NavigationLink(destination: FavoritesView(favorites: favorites)) {
+                            Image(systemName: "heart")
+                                .resizable()
+                                .frame(width: 30, height: 30)
+                        }
+                    }
+                )
+            }
+        }
+        .onAppear(perform: fetch2)
+    }
+    
+
+    func fetch2() {
+        if let url = URL(string: "https://api.deezer.com/album/\(albumId)") {
+            URLSession.shared.dataTask(with: url) { data, response, error in
+                if let error = error {
+                    DispatchQueue.main.async {
+                        errorMessage = "Hata oluştu: \(error)"
+                    }
+                } else if let data = data {
+                    do {
+                        if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                            DispatchQueue.main.async {
+                                album_title = jsonObject["title"] as? String ?? ""
+                                let main_cover = jsonObject["cover_small"] as? String ?? ""
+                                
+                                if let _tracks = jsonObject["tracks"] as? [String: Any],
+                                   let tracksData = _tracks["data"] as? [[String: Any]] {
+                                    for dataItem in tracksData {
+                                        let id = dataItem["id"] as? Int ?? 0
+                                        let title = dataItem["title"] as? String ?? ""
+                                        let duration = dataItem["duration"] as? Int ?? 0
+                                        let preview = dataItem["preview"] as? String ?? ""
+                                        
+                                        let newTrack = Track(id: id, title: title, duration: duration, preview: preview, cover: main_cover)
+                                        tracks.append(newTrack)
+                                    }
+                                }
+                            }
+                        }
+                    } catch {
+                        DispatchQueue.main.async {
+                            errorMessage = "JSON verisini çözme hatası: \(error)"
+                        }
+                    }
+                }
+            }.resume()
+        } else {
+            DispatchQueue.main.async {
+                errorMessage = "Geçersiz URL"
+            }
+        }
+    }
+}
 
