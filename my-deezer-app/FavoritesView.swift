@@ -1,8 +1,12 @@
 import SwiftUI
 
+// MARK: - FavoritesPage
+
 struct FavoritesPage: View {
     @ObservedObject var favorites: Favorites
     
+// MARK: - View Body
+
     var body: some View {
         NavigationView {
             List {
@@ -19,7 +23,7 @@ struct FavoritesPage: View {
                         VStack(alignment: .leading) {
                             Text(track.title)
                                 .font(.headline)
-                            Text("\(track.duration) seconds")
+                            Text("\(track.duration / 60).\((track.duration % 60 < 10 ? "0" : "") + String(track.duration % 60))")
                                 .font(.subheadline)
                         }
 
@@ -38,7 +42,7 @@ struct FavoritesPage: View {
                     .padding()
                 }
             }
-            .navigationBarTitle("Favoriler")
+            .navigationBarTitle(Text("Favorites Songs").font(.largeTitle).bold().foregroundColor(.black), displayMode: .inline)
         }
     }
 }

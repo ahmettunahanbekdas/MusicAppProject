@@ -1,5 +1,6 @@
 import SwiftUI
 
+// MARK: - Track Structure
 struct Track: Codable, Identifiable {
     let id: Int
     let title: String
@@ -31,34 +32,36 @@ class Favorites: ObservableObject {
     }
 }
 
-
+// MARK: - SongsView
 
 struct SongsView: View {
     @StateObject var favorites = Favorites()
     @State var tracks = [Track]()
     @State var album_title = ""
     @State var errorMessage = ""
-    
     let albumId: Int
     
+// MARK: - View Body
     var body: some View {
         NavigationView {
             VStack {
                 List(tracks) { track in
                     HStack {
-                        AsyncImage(url: URL(string: track.cover)) { image in
-                            image.resizable()
-                        } placeholder: {
-                            ProgressView()
-                        }
-                        .frame(width: 100, height: 100)
-                        .clipShape(Circle())
-                        
-                        VStack(alignment: .leading) {
-                            Text(track.title)
-                                .font(.headline)
-                            Text("\(track.duration) seconds")
-                                .font(.subheadline)
+                        HStack {
+                            AsyncImage(url: URL(string: track.cover)) { image in
+                                image.resizable()
+                            } placeholder: {
+                                ProgressView()
+                            }
+                            .frame(width: 100, height: 100)
+                            .clipShape(Circle())
+                            
+                            VStack(alignment: .leading) {
+                                Text(track.title)
+                                    .font(.headline)
+                                Text("\(track.duration / 60).\((track.duration % 60 < 10 ? "0" : "") + String(track.duration % 60))")
+                                    .font(.subheadline)
+                            }
                         }
                         
                         Spacer()
@@ -75,7 +78,6 @@ struct SongsView: View {
                                 .frame(width: 30, height: 30)
                         }
                     }
-                    .padding()
                 }
                 .navigationBarTitle(Text(album_title).font(.largeTitle).bold().foregroundColor(.black), displayMode: .inline)
                 .navigationBarItems(trailing: NavigationLink(destination: FavoritesPage(favorites: favorites)) {
@@ -83,8 +85,10 @@ struct SongsView: View {
                 })
             }
         }
-        .onAppear(perform: fetch2)    }
-
+        .onAppear(perform: fetch2)
+    }
+    
+// MARK: - Methods
     func fetch2() {
         if let url = URL(string: "https://api.deezer.com/album/\(albumId)") {
             URLSession.shared.dataTask(with: url) { data, response, error in
@@ -127,4 +131,3 @@ struct SongsView: View {
         }
     }
 }
-

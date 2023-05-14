@@ -1,5 +1,7 @@
 import SwiftUI
 
+// MARK: - Models
+
 private struct Genre: Codable, Identifiable {
     let id: Int
     let name: String
@@ -23,10 +25,13 @@ private struct GenreData: Codable {
     let data: [Genre]
 }
 
+// MARK: - Views
+
 struct ContentView: View {
     @State private var genres = [Genre]()
     @State private var errorMessage = ""
     @State private var imageUrl = ""
+    @State private var showingFavoritesPage = false
     
     var body: some View {
         NavigationView {
@@ -64,7 +69,6 @@ struct ContentView: View {
                                     }
                                 }
                             }
-                            .padding()
                         }
                         .background(Color.gray.opacity(0.2))
                         .cornerRadius(10)
@@ -72,14 +76,25 @@ struct ContentView: View {
                 }
                 .padding(.horizontal)
                 .onAppear(perform: fetchGenres)
-                .navigationBarTitle("CATAGORIES")
-                .navigationBarTitle(Text("CATAGORIES").font(.largeTitle).bold().foregroundColor(.black), displayMode: .inline)
-
+                .navigationBarTitle("GENRES")
+                .navigationBarTitle(Text("GENRES").font(.largeTitle).bold().foregroundColor(.black), displayMode: .inline)
+                .toolbar {
+                    ToolbarItem(placement: .bottomBar) {
+                        Button(action: {
+                            showingFavoritesPage = true
+                        }) {
+                            Image(systemName: "heart.fill")
+                        }
+                        .sheet(isPresented: $showingFavoritesPage) {
+                            FavoritesPage(favorites: Favorites())
+                        }
+                    }
+                }
             }
-            
-        
         }
     }
+    
+    // MARK: - Methods
     
     func fetchGenres() {
         let url = URL(string: "https://api.deezer.com/genre")!
@@ -106,12 +121,6 @@ struct ContentView: View {
                 errorMessage = error.localizedDescription
             }
         }.resume()
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
     }
 }
 
