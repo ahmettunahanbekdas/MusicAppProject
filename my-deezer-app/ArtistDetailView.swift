@@ -13,7 +13,7 @@ private struct Album: Codable, Identifiable {
     let title: String
     let link: String
     let cover: String
-    let coverSmall: String
+    let coverSmall: URL
     let coverMedium: URL
     let coverBig: String
     let coverXl: URL
@@ -69,7 +69,7 @@ struct ArtistDetailView: View {
         ZStack(alignment: .top) {
             ScrollView {
                 VStack(alignment: .center) {
-                    AsyncImage(url: artistDetail?.pictureMedium ?? nil) { phase in
+                    AsyncImage(url: artistDetail?.pictureXl ?? nil) { phase in
                         switch phase {
                         case .success(let image):
                             image
@@ -89,7 +89,7 @@ struct ArtistDetailView: View {
                     ForEach(albums) { album in
                         NavigationLink(destination: SongsView(albumId: album.id)) {
                             HStack{
-                                AsyncImage(url: album.coverXl) { phase in
+                                AsyncImage(url: album.coverMedium) { phase in
                                     switch phase {
                                     case .success(let image):
                                         image

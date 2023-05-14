@@ -1,4 +1,5 @@
 import SwiftUI
+import AVKit
 
 // MARK: - Track Structure
 struct Track: Codable, Identifiable {
@@ -33,39 +34,45 @@ class Favorites: ObservableObject {
 }
 
 // MARK: - SongsView
-
 struct SongsView: View {
     @StateObject var favorites = Favorites()
     @State var tracks = [Track]()
     @State var album_title = ""
     @State var errorMessage = ""
     let albumId: Int
-    
-// MARK: - View Body
+
+    @State private var player: AVPlayer?
+
+    // MARK: - View Body
     var body: some View {
         NavigationView {
             VStack {
                 List(tracks) { track in
                     HStack {
-                        HStack {
-                            AsyncImage(url: URL(string: track.cover)) { image in
-                                image.resizable()
-                            } placeholder: {
-                                ProgressView()
-                            }
-                            .frame(width: 100, height: 100)
-                            .clipShape(Circle())
-                            
-                            VStack(alignment: .leading) {
-                                Text(track.title)
-                                    .font(.headline)
-                                Text("\(track.duration / 60).\((track.duration % 60 < 10 ? "0" : "") + String(track.duration % 60))")
-                                    .font(.subheadline)
+                        AsyncImage(url: URL(string: track.cover)) { image in
+                            image.resizable()
+                        } placeholder: {
+                            ProgressView()
+                        }
+                        .frame(width: 100, height: 100)
+                        .clipShape(Circle())
+
+                        VStack(alignment: .leading) {
+                            Text(track.title)
+                                .font(.headline)
+                            Text("\(track.duration / 60).\((track.duration % 60 < 10 ? "0" : "") + String(track.duration % 60))")
+                                .font(.subheadline)
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            if let url = URL(string: track.preview) {
+                                player = AVPlayer(url: url)
+                                player?.play()
                             }
                         }
-                        
+
                         Spacer()
-                        
+
                         Button(action: {
                             if favorites.tracks.contains(where: { $0.id == track.id }) {
                                 favorites.tracks.removeAll(where: { $0.id == track.id })
@@ -88,7 +95,9 @@ struct SongsView: View {
         .onAppear(perform: fetch2)
     }
     
-// MARK: - Methods
+    // MARK: - Methods
+
+    
     func fetch2() {
         if let url = URL(string: "https://api.deezer.com/album/\(albumId)") {
             URLSession.shared.dataTask(with: url) { data, response, error in
