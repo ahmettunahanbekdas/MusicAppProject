@@ -94,7 +94,7 @@ struct ContentView: View {
         }
     }
     
-    // MARK: - Methods
+// MARK: - Methods
     
     func fetchGenres() {
         let url = URL(string: "https://api.deezer.com/genre")!

@@ -1,10 +1,3 @@
-//
-//  ArtistDetailView.swift
-//  my-deezer-app
-//
-//  Created by Ahmet Tunahan Bekdaş on 10.05.2023.
-//
-
 import SwiftUI
 
 // MARK: - Album Structure
@@ -64,7 +57,7 @@ struct ArtistDetailView: View {
     @State private var albums = [Album]()
     let artistId: Int
     
-    // MARK: - View Body
+// MARK: - View Body
     var body: some View {
         ZStack(alignment: .top) {
             ScrollView {
@@ -128,7 +121,6 @@ struct ArtistDetailView: View {
         }
     
 // MARK: - Methods
-    
         func fetchArtistDetail() {
             let url = URL(string: "https://api.deezer.com/artist/\(artistId)")!
             URLSession.shared.dataTask(with: url) { data, response, error in

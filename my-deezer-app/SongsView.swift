@@ -43,7 +43,7 @@ struct SongsView: View {
 
     @State private var player: AVPlayer?
 
-    // MARK: - View Body
+// MARK: - View Body
     var body: some View {
         NavigationView {
             VStack {
@@ -95,9 +95,7 @@ struct SongsView: View {
         .onAppear(perform: fetch2)
     }
     
-    // MARK: - Methods
-
-    
+// MARK: - Methods
     func fetch2() {
         if let url = URL(string: "https://api.deezer.com/album/\(albumId)") {
             URLSession.shared.dataTask(with: url) { data, response, error in
