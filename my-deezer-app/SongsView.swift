@@ -8,6 +8,7 @@ struct Track: Codable, Identifiable {
     let duration: Int
     let preview: String
     let cover: String
+    let coverMedium: String
 }
 
 class Favorites: ObservableObject {
@@ -40,23 +41,23 @@ struct SongsView: View {
     @State var album_title = ""
     @State var errorMessage = ""
     let albumId: Int
-
+    
     @State private var player: AVPlayer?
-
-// MARK: - View Body
+    
+    // MARK: - View Body
     var body: some View {
         NavigationView {
             VStack {
                 List(tracks) { track in
                     HStack {
-                        AsyncImage(url: URL(string: track.cover)) { image in
+                        AsyncImage(url: URL(string: track.coverMedium)) { image in
                             image.resizable()
                         } placeholder: {
                             ProgressView()
                         }
                         .frame(width: 100, height: 100)
                         .clipShape(Circle())
-
+                        
                         VStack(alignment: .leading) {
                             Text(track.title)
                                 .font(.headline)
@@ -70,9 +71,9 @@ struct SongsView: View {
                                 player?.play()
                             }
                         }
-
+                        
                         Spacer()
-
+                        
                         Button(action: {
                             if favorites.tracks.contains(where: { $0.id == track.id }) {
                                 favorites.tracks.removeAll(where: { $0.id == track.id })
@@ -94,8 +95,8 @@ struct SongsView: View {
         }
         .onAppear(perform: fetch2)
     }
-    
-// MARK: - Methods
+
+    // MARK: - Methods
     func fetch2() {
         if let url = URL(string: "https://api.deezer.com/album/\(albumId)") {
             URLSession.shared.dataTask(with: url) { data, response, error in
@@ -105,20 +106,21 @@ struct SongsView: View {
                     }
                 } else if let data = data {
                     do {
-                        if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                            DispatchQueue.main.async {
-                                album_title = jsonObject["title"] as? String ?? ""
-                                let main_cover = jsonObject["cover_small"] as? String ?? ""
-                                
-                                if let _tracks = jsonObject["tracks"] as? [String: Any],
-                                   let tracksData = _tracks["data"] as? [[String: Any]] {
-                                    for dataItem in tracksData {
+                        let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                        DispatchQueue.main.async {
+                            album_title = jsonObject?["title"] as? String ?? ""
+                            
+                            if let tracksData = jsonObject?["tracks"] as? [String: Any] {
+                                if let dataItems = tracksData["data"] as? [[String: Any]] {
+                                    for dataItem in dataItems {
                                         let id = dataItem["id"] as? Int ?? 0
                                         let title = dataItem["title"] as? String ?? ""
                                         let duration = dataItem["duration"] as? Int ?? 0
                                         let preview = dataItem["preview"] as? String ?? ""
+                                        let cover = jsonObject?["cover"] as? String ?? ""
+                                        let coverMedium = jsonObject?["cover_medium"] as? String ?? ""
                                         
-                                        let newTrack = Track(id: id, title: title, duration: duration, preview: preview, cover: main_cover)
+                                        let newTrack = Track(id: id, title: title, duration: duration, preview: preview, cover: cover, coverMedium: coverMedium)
                                         tracks.append(newTrack)
                                     }
                                 }
@@ -138,3 +140,5 @@ struct SongsView: View {
         }
     }
 }
+        
+                            
