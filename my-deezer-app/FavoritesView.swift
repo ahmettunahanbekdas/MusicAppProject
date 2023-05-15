@@ -40,7 +40,7 @@ struct FavoritesPage: View {
                     .padding()
                 }
             }
-            .navigationBarTitle(Text("Favorites Songs").font(.largeTitle).bold().foregroundColor(.black), displayMode: .inline)
+            .navigationBarTitle(Text("Favorite Songs").font(.largeTitle).bold().foregroundColor(.black), displayMode: .inline)
         }
     }
 }
