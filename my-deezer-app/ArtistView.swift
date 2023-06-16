@@ -6,6 +6,8 @@ private struct Artist: Codable, Identifiable {
     enum CodingKeys: String, CodingKey {
         case id, name, picture, pictureSmall = "picture_small", pictureMedium = "picture_medium", pictureBig = "picture_big", pictureXl = "picture_xl", radio, tracklist, type
     }
+    
+    
     let id: Int
     let name: String
     let picture: URL

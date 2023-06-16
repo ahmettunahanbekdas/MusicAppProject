@@ -2,7 +2,7 @@ import SwiftUI
 // MARK: - FavoritesPage
 struct FavoritesPage: View {
     @ObservedObject var favorites: Favorites
-    
+
 // MARK: - View Body
     var body: some View {
         NavigationView {
