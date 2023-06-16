@@ -19,6 +19,7 @@ private struct Album: Codable, Identifiable {
     let explicitLyrics: Bool
     let type: String
     
+    
     enum CodingKeys: String, CodingKey {
         case id, title, link, cover, coverSmall = "cover_small", coverMedium = "cover_medium", coverBig = "cover_big", coverXl = "cover_xl", md5Image = "md5_image", genreId = "genre_id", fans, releaseDate = "release_date", recordType = "record_type", tracklist, explicitLyrics = "explicit_lyrics", type
     }

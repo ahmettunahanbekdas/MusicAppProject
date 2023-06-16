@@ -95,7 +95,6 @@ struct SongsView: View {
         }
         .onAppear(perform: fetch2)
     }
-
     // MARK: - Methods
     func fetch2() {
         if let url = URL(string: "https://api.deezer.com/album/\(albumId)") {

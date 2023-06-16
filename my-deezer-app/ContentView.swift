@@ -12,6 +12,7 @@ private struct Genre: Codable, Identifiable {
     let pictureXL: String
     let type: String
     
+    
     private enum CodingKeys: String, CodingKey {
         case id, name, picture, type
         case pictureSmall = "picture_small"

@@ -1,5 +1,4 @@
 import SwiftUI
-
 // MARK: - FavoritesPage
 struct FavoritesPage: View {
     @ObservedObject var favorites: Favorites
