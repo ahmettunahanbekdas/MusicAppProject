@@ -1,5 +1,6 @@
 import SwiftUI
 
+
 // MARK: - Album Structure
 private struct Album: Codable, Identifiable {
     let id: Int
