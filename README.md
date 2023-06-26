@@ -1,5 +1,5 @@
 # Features
-### - SwiftUI
+ - SwiftUI
 ### - Alamofire
 ### - Core Data
 ### - Networking, JSON Parsing, APIs 
