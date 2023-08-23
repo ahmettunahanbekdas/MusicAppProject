@@ -10,7 +10,7 @@ The application consists of 2 tab bars and a total of 5 pages.
 - On the fourth page, the songs within the selected album are listed.
 - Each cell on this page has a like button. When the like button is pressed, the song data is saved to Core Data and added to the favorites section.
 - Additionally, when a cell is pressed, a 30-second preview of the song is played.
-- 
+  
 ## Features
  - SwiftUI
  - Alamofire
